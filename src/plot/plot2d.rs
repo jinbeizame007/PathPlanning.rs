@@ -23,11 +23,11 @@ pub fn plot_env(env: &Env<2>) -> Result<(), Box<dyn std::error::Error>> {
             Obstacle::RectObstacle {center, size} => {
                 let left_upper_corner = (center[0] - size[0]/2.0, center[1] - size[1]/2.0);
                 let right_lower_corner = (center[0] + size[0]/2.0, center[1] + size[1]/2.0);
-                let rect = Rectangle::new([left_upper_corner, right_lower_corner], RED.filled());
+                let rect = Rectangle::new([left_upper_corner, right_lower_corner], *&Palette99::pick(i).filled());
                 chart.draw_series([rect]).unwrap();
             },
             Obstacle::CircleObstacle {center, radius} => {
-                let circle = Circle::new((center[0], center[1]), radius * 10.0, RED.filled());
+                let circle = Circle::new((center[0], center[1]), radius * 10.0, *&Palette99::pick(i).filled());
                 chart.draw_series([circle]).unwrap();
             },
         };
