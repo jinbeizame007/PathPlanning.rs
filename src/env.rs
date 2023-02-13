@@ -1,7 +1,7 @@
 mod obstacle;
 pub use obstacle::Obstacle;
-pub use obstacle::RectObstacle;
-pub use obstacle::CircleObstacle;
+pub use obstacle::Obstacle::RectObstacle;
+pub use obstacle::Obstacle::CircleObstacle;
 
 mod env;
 pub use env::Env;
