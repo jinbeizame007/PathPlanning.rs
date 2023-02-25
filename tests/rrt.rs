@@ -57,3 +57,18 @@ fn test_get_extended_node() {
     let extended_node = rrt.get_extended_node(&nearest_node, &new_node);
     assert!((calc_distance(nearest_node, &extended_node) - rrt.step_size).abs() < 1E-10);
 }
+
+#[test]
+fn test_plan() {
+    let low: [f32; 2] = [0.0, 0.0];
+    let high: [f32; 2] = [50.0, 30.0];
+    let start: [f32; 2] = [1.0, 1.0];
+    let goal: [f32; 2] = [48.0, 25.0];
+
+    let rrt = RRT::new(start, goal, low, high);
+    let path = rrt.plan();
+
+    assert!(path.len() > 0);
+    assert_eq!(path[0], start);
+    assert_eq!(path[path.len() - 1], goal);
+}
