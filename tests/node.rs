@@ -1,5 +1,6 @@
 use path_planning::planner::Node;
 use path_planning::planner::calc_distance;
+use path_planning::planner::calc_difference;
 
 #[test]
 fn test_node() {
@@ -12,4 +13,6 @@ fn test_node() {
     let node2 = Node::new([1.0, 1.0]);
     assert_eq!(calc_distance(&node1, &node2), 2.0_f32.powf(0.5));
     assert_eq!(calc_distance(&node2, &node1), 2.0_f32.powf(0.5));
+
+    assert_eq!(calc_difference(&node1, &node2), [1.0, 1.0]);
 }
