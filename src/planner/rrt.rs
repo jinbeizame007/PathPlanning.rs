@@ -1,4 +1,5 @@
-pub use crate::planner::node::Node;
+use rand::prelude::*;
+use crate::planner::node::Node;
 
 pub struct RRT<const D: usize> {
     pub start_node: Node<D>,
@@ -28,5 +29,14 @@ impl<const D: usize> RRT<D> {
             step_size: 0.5,
             max_iter: 1000,
         }
+    }
+}
+
+impl<const D: usize> RRT<D> {
+    pub fn sample(&self) -> Node<D> {
+        let mut rng = thread_rng();
+        let position = (0..D).map(|i| rng.gen_range(self.low[i]..self.high[i])).collect::<Vec<f32>>().try_into().unwrap();
+
+        Node::new(position)
     }
 }
