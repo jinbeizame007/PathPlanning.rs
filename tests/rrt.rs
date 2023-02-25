@@ -1,6 +1,6 @@
-use path_planning::planner::RRT;
-use path_planning::planner::Node;
 use path_planning::planner::calc_distance;
+use path_planning::planner::Node;
+use path_planning::planner::RRT;
 
 #[test]
 fn test_init() {
@@ -21,7 +21,7 @@ fn create_example_2d_rrt() -> RRT<2> {
     let goal: [f32; 2] = [0.9, 0.9];
     let low: [f32; 2] = [0.0, 0.0];
     let high: [f32; 2] = [1.0, 1.0];
-    
+
     RRT::new(start, goal, low, high)
 }
 

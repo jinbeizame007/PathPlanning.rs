@@ -5,7 +5,10 @@ pub struct Node<const D: usize> {
 
 impl<const D: usize> Node<D> {
     pub fn new(position: [f32; D]) -> Self {
-        Node{position: position, parent: None}
+        Node {
+            position: position,
+            parent: None,
+        }
     }
 }
 

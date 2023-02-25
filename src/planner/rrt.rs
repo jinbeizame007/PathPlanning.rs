@@ -1,7 +1,7 @@
-use rand::prelude::*;
-use crate::planner::node::Node;
-use crate::planner::node::calc_distance;
 use crate::planner::node::calc_difference;
+use crate::planner::node::calc_distance;
+use crate::planner::node::Node;
+use rand::prelude::*;
 
 pub struct RRT<const D: usize> {
     pub start_node: Node<D>,
@@ -15,13 +15,8 @@ pub struct RRT<const D: usize> {
 }
 
 impl<const D: usize> RRT<D> {
-    pub fn new(
-        start: [f32; D],
-        goal: [f32; D],
-        low: [f32; D],
-        high: [f32; D]
-    ) -> Self {
-        RRT{
+    pub fn new(start: [f32; D], goal: [f32; D], low: [f32; D], high: [f32; D]) -> Self {
+        RRT {
             start_node: Node::new(start),
             goal_node: Node::new(goal),
             low: low,
@@ -37,7 +32,11 @@ impl<const D: usize> RRT<D> {
 impl<const D: usize> RRT<D> {
     pub fn sample(&self) -> Node<D> {
         let mut rng = thread_rng();
-        let position = (0..D).map(|i| rng.gen_range(self.low[i]..self.high[i])).collect::<Vec<f32>>().try_into().unwrap();
+        let position = (0..D)
+            .map(|i| rng.gen_range(self.low[i]..self.high[i]))
+            .collect::<Vec<f32>>()
+            .try_into()
+            .unwrap();
 
         Node::new(position)
     }
@@ -53,7 +52,7 @@ impl<const D: usize> RRT<D> {
                 nearest_node_index = i;
             }
         }
-        
+
         nearest_node_index
     }
 
@@ -87,7 +86,11 @@ impl<const D: usize> RRT<D> {
             }
         }
 
-        return reverse_path.iter().rev().map(|&x| x).collect::<Vec<[f32; D]>>();
+        return reverse_path
+            .iter()
+            .rev()
+            .map(|&x| x)
+            .collect::<Vec<[f32; D]>>();
     }
 
     pub fn plan(mut self) -> Vec<[f32; D]> {

@@ -1,6 +1,6 @@
-use path_planning::planner::Node;
-use path_planning::planner::calc_distance;
 use path_planning::planner::calc_difference;
+use path_planning::planner::calc_distance;
+use path_planning::planner::Node;
 
 #[test]
 fn test_node() {
