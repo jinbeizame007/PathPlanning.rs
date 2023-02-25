@@ -1,5 +1,6 @@
 use path_planning::planner::RRT;
 use path_planning::planner::Node;
+use path_planning::planner::calc_distance;
 
 #[test]
 fn test_init() {
@@ -43,4 +44,16 @@ fn test_get_nearest_node_index() {
     let node = Node::new([0.2, 0.2]);
     let nearest_node_index = rrt.get_nearest_node_index(&node);
     assert_eq!(nearest_node_index, 0);
+}
+
+#[test]
+fn test_get_extended_node() {
+    let rrt = create_example_2d_rrt();
+
+    let new_node = Node::new([2.0, 2.0]);
+    let nearest_node_index = rrt.get_nearest_node_index(&new_node);
+    let nearest_node = &rrt.nodes[nearest_node_index];
+
+    let extended_node = rrt.get_extended_node(&nearest_node, &new_node);
+    assert!((calc_distance(nearest_node, &extended_node) - rrt.step_size).abs() < 1E-10);
 }
