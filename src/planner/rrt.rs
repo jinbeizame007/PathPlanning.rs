@@ -1,6 +1,7 @@
 use rand::prelude::*;
 use crate::planner::node::Node;
 use crate::planner::node::calc_distance;
+use crate::planner::node::calc_difference;
 
 pub struct RRT<const D: usize> {
     pub start_node: Node<D>,
@@ -8,9 +9,9 @@ pub struct RRT<const D: usize> {
     pub low: [f32; D],
     pub high: [f32; D],
     pub nodes: Vec<Node<D>>,
-    goal_sample_rate: f32,
-    step_size: f32,
-    max_iter: i32,
+    pub goal_sample_rate: f32,
+    pub step_size: f32,
+    pub max_iter: i32,
 }
 
 impl<const D: usize> RRT<D> {
@@ -53,6 +54,18 @@ impl<const D: usize> RRT<D> {
             }
         }
         
-        return nearest_node_index;
+        nearest_node_index
+    }
+
+    pub fn get_extended_node(&self, nearest_node: &Node<D>, new_node: &Node<D>) -> Node<D> {
+        let difference = calc_difference(&nearest_node, &new_node);
+        let distance = calc_distance(&nearest_node, &new_node);
+
+        let mut new_position = nearest_node.position.clone();
+        for i in 0..D {
+            new_position[i] += difference[i] * (self.step_size / distance);
+        }
+
+        Node::new(new_position)
     }
 }
