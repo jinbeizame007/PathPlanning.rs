@@ -1,4 +1,5 @@
 use path_planning::planner::RRT;
+use path_planning::planner::Node;
 
 #[test]
 fn test_init() {
@@ -33,4 +34,13 @@ fn test_sample() {
             assert!(rrt.low[i] <= node.position[i] && node.position[i] <= rrt.high[i]);
         }
     }
+}
+
+#[test]
+fn test_get_nearest_node_index() {
+    let rrt = create_example_2d_rrt();
+
+    let node = Node::new([0.2, 0.2]);
+    let nearest_node_index = rrt.get_nearest_node_index(&node);
+    assert_eq!(nearest_node_index, 0);
 }
