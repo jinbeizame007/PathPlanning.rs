@@ -68,4 +68,64 @@ impl<const D: usize> RRT<D> {
 
         Node::new(new_position)
     }
+
+    pub fn is_near_goal(&self, node: &Node<D>) -> bool {
+        let distance_from_goal = calc_distance(&self.goal_node, &node);
+        return distance_from_goal <= self.step_size;
+    }
+
+    pub fn extract_path(&self) -> Vec<[f32; D]> {
+        let mut reverse_path: Vec<[f32; D]> = Vec::new();
+
+        let mut node = &self.goal_node;
+        loop {
+            reverse_path.push(node.position.clone());
+
+            match node.parent {
+                Some(parent_node_index) => node = &self.nodes[parent_node_index],
+                None => break,
+            }
+        }
+
+        return reverse_path.iter().rev().map(|&x| x).collect::<Vec<[f32; D]>>();
+    }
+
+    pub fn plan(mut self) -> Vec<[f32; D]> {
+        //self.nodes = vec![Node::new(self.start_node.position.clone())];
+
+        for _ in 0..self.max_iter {
+            // Sample a node
+            let mut new_node;
+            if thread_rng().gen::<f32>() < self.goal_sample_rate {
+                new_node = Node::new(self.goal_node.position);
+            } else {
+                new_node = self.sample();
+            }
+
+            // Get the nearest node
+            let nearest_node_index = self.get_nearest_node_index(&new_node);
+            let nearest_node = &self.nodes[nearest_node_index];
+
+            let distance_from_nearest_node = calc_distance(nearest_node, &new_node);
+            if self.step_size < distance_from_nearest_node {
+                new_node = self.get_extended_node(nearest_node, &new_node);
+            }
+
+            // Add the new node to the tree
+            new_node.parent = Some(nearest_node_index);
+            if self.is_near_goal(&new_node) {
+                self.nodes.push(new_node);
+
+                let new_node_index = self.nodes.len();
+                let mut goal_node = Node::new(self.goal_node.position);
+                goal_node.parent = Some(new_node_index);
+                self.nodes.push(goal_node);
+                return self.extract_path();
+            } else {
+                self.nodes.push(new_node);
+            }
+        }
+
+        return Vec::new();
+    }
 }
