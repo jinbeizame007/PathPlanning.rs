@@ -7,7 +7,7 @@ const MARGIN: i32 = 20;
 const X_LABEL_AREA_SIZE: i32 = 30;
 const Y_LABEL_AREA_SIZE: i32 = 30;
 
-pub fn draw_env(chart: &mut ChartContext<BitMapBackend, Cartesian2d<RangedCoordf32, RangedCoordf32>>, env: &Env<2>) {
+fn draw_env(chart: &mut ChartContext<BitMapBackend, Cartesian2d<RangedCoordf32, RangedCoordf32>>, env: &Env<2>) {
     for i in 0..env.obstacles.len() {
         let obs = &env.obstacles[i];
         match obs {
@@ -16,7 +16,7 @@ pub fn draw_env(chart: &mut ChartContext<BitMapBackend, Cartesian2d<RangedCoordf
                 let right_lower_corner = (center[0] + size[0] / 2.0, center[1] + size[1] / 2.0);
                 let rect = Rectangle::new(
                     [left_upper_corner, right_lower_corner],
-                    *&Palette99::pick(i).filled(),
+                    *&Palette99::pick(i+1).filled(),
                 );
                 chart.draw_series([rect]).unwrap();
             }
@@ -24,11 +24,21 @@ pub fn draw_env(chart: &mut ChartContext<BitMapBackend, Cartesian2d<RangedCoordf
                 let circle = Circle::new(
                     (center[0], center[1]),
                     radius * 10.0,
-                    *&Palette99::pick(i).filled(),
+                    *&Palette99::pick(i+1).filled(),
                 );
                 chart.draw_series([circle]).unwrap();
             }
         };
+    }
+}
+
+fn draw_path(chart: &mut ChartContext<BitMapBackend, Cartesian2d<RangedCoordf32, RangedCoordf32>>, path: &Vec<[f32; 2]>) {
+    let path_tuple: Vec<(f32, f32)> = (0..path.len()).map(|i| (path[i][0], path[i][1])).collect();
+    chart.draw_series(LineSeries::new(path_tuple.clone(), &RED)).unwrap();
+
+    for i in 0..path.len() {
+        let circle = Circle::new(path_tuple[i].clone(), 3.0, *&Palette99::pick(0).filled());
+        chart.draw_series([circle]).unwrap();
     }
 }
 
@@ -45,6 +55,25 @@ pub fn plot_env(env: &Env<2>) -> Result<(), Box<dyn std::error::Error>> {
     chart.configure_mesh().draw().unwrap();
 
     draw_env(&mut chart, &env);
+
+    root.present()?;
+    Ok(())
+}
+
+pub fn plot_path(env: &Env<2>, path: &Vec<[f32; 2]>) -> Result<(), Box<dyn std::error::Error>> {
+    let root = BitMapBackend::new("path.png", (1000, 600)).into_drawing_area();
+    root.fill(&WHITE)?;
+
+    let mut chart = ChartBuilder::on(&root)
+        .margin(MARGIN)
+        .x_label_area_size(X_LABEL_AREA_SIZE)
+        .y_label_area_size(Y_LABEL_AREA_SIZE)
+        .build_cartesian_2d(env.low[0]..env.high[0], env.low[1]..env.high[1])
+        .unwrap();
+    chart.configure_mesh().draw().unwrap();
+
+    draw_env(&mut chart, &env);
+    draw_path(&mut chart, &path);
 
     root.present()?;
     Ok(())

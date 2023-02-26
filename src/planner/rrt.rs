@@ -11,20 +11,20 @@ pub struct RRT<const D: usize> {
     pub nodes: Vec<Node<D>>,
     pub goal_sample_rate: f32,
     pub step_size: f32,
-    pub max_iter: i32,
+    pub max_iter: usize,
 }
 
 impl<const D: usize> RRT<D> {
-    pub fn new(start: [f32; D], goal: [f32; D], low: [f32; D], high: [f32; D]) -> Self {
+    pub fn new(start: [f32; D], goal: [f32; D], low: [f32; D], high: [f32; D], goal_sample_rate: f32, step_size: f32, max_iter: usize) -> Self {
         RRT {
             start_node: Node::new(start),
             goal_node: Node::new(goal),
             low: low,
             high: high,
             nodes: vec![Node::new(start)],
-            goal_sample_rate: 0.7,
-            step_size: 0.5,
-            max_iter: 1000,
+            goal_sample_rate: goal_sample_rate,
+            step_size: step_size,
+            max_iter: max_iter,
         }
     }
 }
@@ -94,8 +94,6 @@ impl<const D: usize> RRT<D> {
     }
 
     pub fn plan(mut self) -> Vec<[f32; D]> {
-        //self.nodes = vec![Node::new(self.start_node.position.clone())];
-
         for _ in 0..self.max_iter {
             // Sample a node
             let mut new_node;
@@ -119,9 +117,10 @@ impl<const D: usize> RRT<D> {
             if self.is_near_goal(&new_node) {
                 self.nodes.push(new_node);
 
-                let new_node_index = self.nodes.len();
+                let new_node_index = self.nodes.len() - 1;
                 let mut goal_node = Node::new(self.goal_node.position);
                 goal_node.parent = Some(new_node_index);
+                self.goal_node.parent = Some(new_node_index);
                 self.nodes.push(goal_node);
                 return self.extract_path();
             } else {
