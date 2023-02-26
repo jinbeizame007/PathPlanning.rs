@@ -15,7 +15,15 @@ pub struct RRT<const D: usize> {
 }
 
 impl<const D: usize> RRT<D> {
-    pub fn new(start: [f32; D], goal: [f32; D], low: [f32; D], high: [f32; D], goal_sample_rate: f32, step_size: f32, max_iter: usize) -> Self {
+    pub fn new(
+        start: [f32; D],
+        goal: [f32; D],
+        low: [f32; D],
+        high: [f32; D],
+        goal_sample_rate: f32,
+        step_size: f32,
+        max_iter: usize,
+    ) -> Self {
         RRT {
             start_node: Node::new(start),
             goal_node: Node::new(goal),
