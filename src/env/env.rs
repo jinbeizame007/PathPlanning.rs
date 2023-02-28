@@ -9,6 +9,13 @@ pub struct Env<const D: usize> {
 }
 
 impl<const D: usize> Env<D> {
+    pub fn new(low: [f32; D], high: [f32; D], obstacles: Vec<Obstacle<D>>) -> Self {
+        Env {
+            low: low,
+            high: high,
+            obstacles: obstacles,
+        }
+    }
     pub fn is_inside_obstacle(&self, position: &[f32; D]) -> bool {
         for obstacle in self.obstacles.iter() {
             if obstacle.is_inside(position) {
