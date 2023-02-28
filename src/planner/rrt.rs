@@ -9,6 +9,7 @@ pub struct RRT<const D: usize> {
     pub low: [f32; D],
     pub high: [f32; D],
     pub nodes: Vec<Node<D>>,
+    is_approved: Box<dyn Fn(&[f32; D]) -> bool>,
     pub goal_sample_rate: f32,
     pub step_size: f32,
     pub max_iter: usize,
@@ -20,6 +21,7 @@ impl<const D: usize> RRT<D> {
         goal: [f32; D],
         low: [f32; D],
         high: [f32; D],
+        is_approved: Box<dyn Fn(&[f32; D]) -> bool>,
         goal_sample_rate: f32,
         step_size: f32,
         max_iter: usize,
@@ -29,6 +31,7 @@ impl<const D: usize> RRT<D> {
             goal_node: Node::new(goal),
             low: low,
             high: high,
+            is_approved: is_approved,
             nodes: vec![Node::new(start)],
             goal_sample_rate: goal_sample_rate,
             step_size: step_size,
@@ -118,6 +121,10 @@ impl<const D: usize> RRT<D> {
             let distance_from_nearest_node = calc_distance(nearest_node, &new_node);
             if self.step_size < distance_from_nearest_node {
                 new_node = self.get_extended_node(nearest_node, &new_node);
+            }
+
+            if !(self.is_approved)(&new_node.position) {
+                continue;
             }
 
             // Add the new node to the tree
