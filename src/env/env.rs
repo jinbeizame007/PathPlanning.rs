@@ -8,6 +8,15 @@ pub struct Env<const D: usize> {
     pub obstacles: Vec<Obstacle<D>>,
 }
 
+impl<const D: usize> Env<D> {
+    pub fn is_inside_obstacle(&self, position: &[f32; D]) -> bool {
+        for obstacle in self.obstacles.iter() {
+            if obstacle.is_inside(position) {return true};
+        }
+        return false;
+    }
+}
+
 pub fn create_example_2d_env() -> Env<2> {
     let low = [0.0, 0.0];
     let high = [50.0, 30.0];
@@ -55,4 +64,11 @@ pub fn create_example_2d_env() -> Env<2> {
         high,
         obstacles,
     };
+}
+
+impl<const D: usize> Clone for Env<D> {
+    fn clone(&self) -> Env<D> {
+        let obstacles: Vec<Obstacle<D>> = self.obstacles.iter().map(|obs| obs.clone()).collect();
+        return Env{low: self.low.clone(), high: self.high.clone(), obstacles: obstacles};
+    }
 }
