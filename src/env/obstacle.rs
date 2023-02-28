@@ -31,11 +31,17 @@ impl<const D: usize> Obstacle<D> {
 impl<const D: usize> Clone for Obstacle<D> {
     fn clone(&self) -> Obstacle<D> {
         match self {
-            Obstacle::RectObstacle {center, size} => {
-                return Obstacle::RectObstacle{center: center.clone(), size: size.clone()};
+            Obstacle::RectObstacle { center, size } => {
+                return Obstacle::RectObstacle {
+                    center: center.clone(),
+                    size: size.clone(),
+                };
             }
-            Obstacle::CircleObstacle {center, radius} => {
-                return Obstacle::CircleObstacle{center: center.clone(), radius: *radius};
+            Obstacle::CircleObstacle { center, radius } => {
+                return Obstacle::CircleObstacle {
+                    center: center.clone(),
+                    radius: *radius,
+                };
             }
         }
     }

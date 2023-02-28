@@ -11,16 +11,7 @@ fn main() {
     let _env = env.clone();
     let is_approved = Box::new(move |position: &[f32; 2]| !_env.is_inside_obstacle(position));
 
-    let rrt = pp::planner::RRT::new(
-        start,
-        goal,
-        low,
-        high,
-        is_approved,
-        0.2,
-        2.0,
-        2000,
-    );
+    let rrt = pp::planner::RRT::new(start, goal, low, high, is_approved, 0.2, 2.0, 2000);
     let path = rrt.plan();
     pp::plot::plot_path(&env, &path).unwrap();
 }
