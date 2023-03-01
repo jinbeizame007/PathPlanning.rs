@@ -11,7 +11,16 @@ fn test_init() {
     let goal_sample_rate = 0.2;
     let step_size = 0.2;
     let max_iter = 100;
-    let rrt = RRT::new(start, goal, low, high, is_approved, goal_sample_rate, step_size, max_iter);
+    let rrt = RRT::new(
+        start,
+        goal,
+        low,
+        high,
+        is_approved,
+        goal_sample_rate,
+        step_size,
+        max_iter,
+    );
 
     assert_eq!(rrt.start_node.position, start);
     assert_eq!(rrt.goal_node.position, goal);
@@ -29,7 +38,16 @@ fn create_example_2d_rrt() -> RRT<2> {
     let step_size = 0.2;
     let max_iter = 100;
 
-    RRT::new(start, goal, low, high, is_approved, goal_sample_rate, step_size, max_iter)
+    RRT::new(
+        start,
+        goal,
+        low,
+        high,
+        is_approved,
+        goal_sample_rate,
+        step_size,
+        max_iter,
+    )
 }
 
 #[test]
@@ -76,7 +94,16 @@ fn test_plan() {
     let step_size = 2.0;
     let max_iter = 2000;
 
-    let rrt = RRT::new(start, goal, low, high, is_approved, goal_sample_rate, step_size, max_iter);
+    let rrt = RRT::new(
+        start,
+        goal,
+        low,
+        high,
+        is_approved,
+        goal_sample_rate,
+        step_size,
+        max_iter,
+    );
     let path = rrt.plan();
 
     assert!(path.len() > 0);
