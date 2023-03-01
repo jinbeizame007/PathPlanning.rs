@@ -1,5 +1,3 @@
-use crate::planner::node::calc_difference;
-use crate::planner::node::calc_distance;
 use crate::planner::node::Node;
 use rand::prelude::*;
 
@@ -57,7 +55,7 @@ impl<const D: usize> RRT<D> {
         let mut min_distance = f32::MAX;
 
         for (i, node) in self.nodes.iter().enumerate() {
-            let distance = calc_distance(&node, new_node);
+            let distance = node.calc_distance(new_node);
             if distance < min_distance {
                 min_distance = distance;
                 nearest_node_index = i;
@@ -68,8 +66,8 @@ impl<const D: usize> RRT<D> {
     }
 
     pub fn get_extended_node(&self, nearest_node: &Node<D>, new_node: &Node<D>) -> Node<D> {
-        let difference = calc_difference(&nearest_node, &new_node);
-        let distance = calc_distance(&nearest_node, &new_node);
+        let difference = nearest_node.calc_difference(&new_node);
+        let distance = nearest_node.calc_distance(&new_node);
 
         let mut new_position = nearest_node.position.clone();
         for i in 0..D {
@@ -80,7 +78,7 @@ impl<const D: usize> RRT<D> {
     }
 
     pub fn is_near_goal(&self, node: &Node<D>) -> bool {
-        let distance_from_goal = calc_distance(&self.goal_node, &node);
+        let distance_from_goal = self.goal_node.calc_distance(&node);
         return distance_from_goal <= self.step_size;
     }
 
@@ -118,7 +116,7 @@ impl<const D: usize> RRT<D> {
             let nearest_node_index = self.get_nearest_node_index(&new_node);
             let nearest_node = &self.nodes[nearest_node_index];
 
-            let distance_from_nearest_node = calc_distance(nearest_node, &new_node);
+            let distance_from_nearest_node = nearest_node.calc_distance(&new_node);
             if self.step_size < distance_from_nearest_node {
                 new_node = self.get_extended_node(nearest_node, &new_node);
             }

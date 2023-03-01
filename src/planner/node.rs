@@ -10,20 +10,20 @@ impl<const D: usize> Node<D> {
             parent: None,
         }
     }
-}
 
-pub fn calc_distance<const D: usize>(node1: &Node<D>, node2: &Node<D>) -> f32 {
-    let mut distance = 0.0;
-    for i in 0..D {
-        distance += (node1.position[i] - node2.position[i]).powf(2.0);
+    pub fn calc_difference(&self, node: &Node<D>) -> [f32; D] {
+        let mut difference: [f32; D] = [0.0; D];
+        for i in 0..D {
+            difference[i] = node.position[i] - self.position[i];
+        }
+        return difference;
     }
-    return distance.powf(0.5);
-}
 
-pub fn calc_difference<const D: usize>(node1: &Node<D>, node2: &Node<D>) -> [f32; D] {
-    let mut difference: [f32; D] = [0.0; D];
-    for i in 0..D {
-        difference[i] = node2.position[i] - node1.position[i];
+    pub fn calc_distance(&self, node: &Node<D>) -> f32 {
+        let mut distance = 0.0;
+        for i in 0..D {
+            distance += (node.position[i] - self.position[i]).powf(2.0);
+        }
+        return distance.powf(0.5);
     }
-    return difference;
 }

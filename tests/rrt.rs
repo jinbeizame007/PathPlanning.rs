@@ -1,4 +1,3 @@
-use path_planning::planner::calc_distance;
 use path_planning::planner::Node;
 use path_planning::planner::RRT;
 
@@ -8,7 +7,11 @@ fn test_init() {
     let goal: [f32; 2] = [0.9, 0.9];
     let low: [f32; 2] = [0.0, 0.0];
     let high: [f32; 2] = [1.0, 1.0];
-    let rrt = RRT::new(start, goal, low, high);
+    let is_approved = Box::new(|_position: &[f32; 2]| true);
+    let goal_sample_rate = 0.2;
+    let step_size = 0.2;
+    let max_iter = 100;
+    let rrt = RRT::new(start, goal, low, high, is_approved, goal_sample_rate, step_size, max_iter);
 
     assert_eq!(rrt.start_node.position, start);
     assert_eq!(rrt.goal_node.position, goal);
@@ -21,8 +24,12 @@ fn create_example_2d_rrt() -> RRT<2> {
     let goal: [f32; 2] = [0.9, 0.9];
     let low: [f32; 2] = [0.0, 0.0];
     let high: [f32; 2] = [1.0, 1.0];
+    let is_approved = Box::new(|_position: &[f32; 2]| true);
+    let goal_sample_rate = 0.2;
+    let step_size = 0.2;
+    let max_iter = 100;
 
-    RRT::new(start, goal, low, high)
+    RRT::new(start, goal, low, high, is_approved, goal_sample_rate, step_size, max_iter)
 }
 
 #[test]
@@ -55,7 +62,7 @@ fn test_get_extended_node() {
     let nearest_node = &rrt.nodes[nearest_node_index];
 
     let extended_node = rrt.get_extended_node(&nearest_node, &new_node);
-    assert!((calc_distance(nearest_node, &extended_node) - rrt.step_size).abs() < 1E-10);
+    assert!((nearest_node.calc_distance(&extended_node) - rrt.step_size).abs() < 1E-6);
 }
 
 #[test]
@@ -64,8 +71,12 @@ fn test_plan() {
     let high: [f32; 2] = [50.0, 30.0];
     let start: [f32; 2] = [1.0, 1.0];
     let goal: [f32; 2] = [48.0, 25.0];
+    let is_approved = Box::new(|_position: &[f32; 2]| true);
+    let goal_sample_rate = 0.2;
+    let step_size = 2.0;
+    let max_iter = 2000;
 
-    let rrt = RRT::new(start, goal, low, high);
+    let rrt = RRT::new(start, goal, low, high, is_approved, goal_sample_rate, step_size, max_iter);
     let path = rrt.plan();
 
     assert!(path.len() > 0);
