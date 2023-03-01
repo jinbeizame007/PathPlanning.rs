@@ -20,10 +20,11 @@ impl<const D: usize> Node<D> {
     }
 
     pub fn calc_distance(&self, node: &Node<D>) -> f32 {
-        let mut distance = 0.0;
-        for i in 0..D {
-            distance += (node.position[i] - self.position[i]).powf(2.0);
-        }
-        return distance.powf(0.5);
+        return self
+            .calc_difference(node)
+            .iter()
+            .map(|x| x.powf(2.0))
+            .sum::<f32>()
+            .powf(0.5);
     }
 }
