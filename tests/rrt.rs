@@ -22,8 +22,8 @@ fn test_init() {
         max_iter,
     );
 
-    assert_eq!(rrt.start_node.position, start);
-    assert_eq!(rrt.goal_node.position, goal);
+    assert_eq!(rrt.start, start);
+    assert_eq!(rrt.goal, goal);
     assert_eq!(rrt.low, low);
     assert_eq!(rrt.high, high);
 }

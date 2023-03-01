@@ -2,8 +2,8 @@ use crate::planner::node::Node;
 use rand::prelude::*;
 
 pub struct RRT<const D: usize> {
-    pub start_node: Node<D>,
-    pub goal_node: Node<D>,
+    pub start: [f32; D],
+    pub goal: [f32; D],
     pub low: [f32; D],
     pub high: [f32; D],
     pub nodes: Vec<Node<D>>,
@@ -25,8 +25,8 @@ impl<const D: usize> RRT<D> {
         max_iter: usize,
     ) -> Self {
         RRT {
-            start_node: Node::new(start),
-            goal_node: Node::new(goal),
+            start: start,
+            goal: goal,
             low: low,
             high: high,
             is_approved: is_approved,
@@ -77,14 +77,14 @@ impl<const D: usize> RRT<D> {
     }
 
     pub fn is_near_goal(&self, node: &Node<D>) -> bool {
-        let distance_from_goal = self.goal_node.calc_distance(&node);
+        let distance_from_goal = node.calc_distance(&Node::new(self.goal));
         return distance_from_goal <= self.step_size;
     }
 
     pub fn extract_path(&self) -> Vec<[f32; D]> {
         let mut reverse_path: Vec<[f32; D]> = Vec::new();
 
-        let mut node = &self.goal_node;
+        let mut node = &self.nodes[self.nodes.len() - 1];
         loop {
             reverse_path.push(node.position.clone());
 
@@ -94,11 +94,7 @@ impl<const D: usize> RRT<D> {
             }
         }
 
-        return reverse_path
-            .iter()
-            .rev()
-            .map(|&x| x)
-            .collect();
+        return reverse_path.iter().rev().map(|&x| x).collect();
     }
 
     pub fn plan(mut self) -> Vec<[f32; D]> {
@@ -106,7 +102,7 @@ impl<const D: usize> RRT<D> {
             // Sample a node
             let mut new_node;
             if thread_rng().gen::<f32>() < self.goal_sample_rate {
-                new_node = Node::new(self.goal_node.position);
+                new_node = Node::new(self.goal);
             } else {
                 new_node = self.sample();
             }
@@ -130,9 +126,8 @@ impl<const D: usize> RRT<D> {
                 self.nodes.push(new_node);
 
                 let new_node_index = self.nodes.len() - 1;
-                let mut goal_node = Node::new(self.goal_node.position);
+                let mut goal_node = Node::new(self.goal);
                 goal_node.parent = Some(new_node_index);
-                self.goal_node.parent = Some(new_node_index);
                 self.nodes.push(goal_node);
                 return self.extract_path();
             } else {
