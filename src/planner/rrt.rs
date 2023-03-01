@@ -41,11 +41,10 @@ impl<const D: usize> RRT<D> {
 impl<const D: usize> RRT<D> {
     pub fn sample(&self) -> Node<D> {
         let mut rng = thread_rng();
-        let position = (0..D)
-            .map(|i| rng.gen_range(self.low[i]..self.high[i]))
-            .collect::<Vec<f32>>()
-            .try_into()
-            .unwrap();
+        let mut position: [f32; D] = [0.0; D];
+        for i in 0..D {
+            position[i] = rng.gen_range(self.low[i]..self.high[i]);
+        }
 
         Node::new(position)
     }
@@ -99,7 +98,7 @@ impl<const D: usize> RRT<D> {
             .iter()
             .rev()
             .map(|&x| x)
-            .collect::<Vec<[f32; D]>>();
+            .collect();
     }
 
     pub fn plan(mut self) -> Vec<[f32; D]> {
