@@ -11,6 +11,8 @@ pub struct RRT<const D: usize> {
     pub goal_sample_rate: f32,
     pub step_size: f32,
     pub max_iter: usize,
+    is_logginge_enabled: bool,
+    pub log: Vec<Vec<Node<D>>>,
 }
 
 impl<const D: usize> RRT<D> {
@@ -34,11 +36,17 @@ impl<const D: usize> RRT<D> {
             goal_sample_rate: goal_sample_rate,
             step_size: step_size,
             max_iter: max_iter,
+            is_logginge_enabled: false,
+            log: Vec::new(),
         }
     }
 }
 
 impl<const D: usize> RRT<D> {
+    pub fn enable_logging(&mut self) {
+        self.is_logginge_enabled = true;
+    }
+
     pub fn sample(&self) -> Node<D> {
         let mut rng = thread_rng();
         let mut position: [f32; D] = [0.0; D];
@@ -97,7 +105,9 @@ impl<const D: usize> RRT<D> {
         return reverse_path.iter().rev().map(|&x| x).collect();
     }
 
-    pub fn plan(mut self) -> Vec<[f32; D]> {
+    pub fn plan(&mut self) -> Vec<[f32; D]> {
+        let mut is_goaled = false;
+
         for _ in 0..self.max_iter {
             // Sample a node
             let mut new_node;
@@ -129,9 +139,17 @@ impl<const D: usize> RRT<D> {
                 let mut goal_node = Node::new(self.goal);
                 goal_node.parent = Some(new_node_index);
                 self.nodes.push(goal_node);
-                return self.extract_path();
+                is_goaled = true
             } else {
                 self.nodes.push(new_node);
+            }
+
+            if self.is_logginge_enabled {
+                self.log.push(self.nodes.clone());
+            }
+
+            if is_goaled {
+                return self.extract_path();
             }
         }
 
