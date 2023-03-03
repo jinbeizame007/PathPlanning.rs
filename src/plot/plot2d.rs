@@ -1,5 +1,6 @@
 use crate::env::Env;
 use crate::env::Obstacle;
+use crate::planner::Node;
 use plotters::coord::types::RangedCoordf32;
 use plotters::prelude::*;
 
@@ -50,6 +51,34 @@ fn draw_path(
     }
 }
 
+fn draw_all_paths(
+    chart: &mut ChartContext<BitMapBackend, Cartesian2d<RangedCoordf32, RangedCoordf32>>,
+    nodes: &Vec<Node<2>>,
+) {
+    for node in nodes.iter() {
+        let circle = Circle::new(
+            (node.position[0], node.position[1]),
+            3.0,
+            *&Palette99::pick(0).filled(),
+        );
+        chart.draw_series([circle]).unwrap();
+
+        match node.parent {
+            Some(parent_index) => {
+                let parent_node = &nodes[parent_index];
+                let line = vec![
+                    (node.position[0], node.position[1]),
+                    (parent_node.position[0], parent_node.position[1]),
+                ];
+                chart
+                    .draw_series(LineSeries::new(line, *&Palette99::pick(0).filled()))
+                    .unwrap();
+            }
+            None => {}
+        }
+    }
+}
+
 pub fn plot_env(env: &Env<2>) -> Result<(), Box<dyn std::error::Error>> {
     let root = BitMapBackend::new("env.png", (1000, 600)).into_drawing_area();
     root.fill(&WHITE)?;
@@ -84,5 +113,29 @@ pub fn plot_path(env: &Env<2>, path: &Vec<[f32; 2]>) -> Result<(), Box<dyn std::
     draw_path(&mut chart, &path);
 
     root.present()?;
+    Ok(())
+}
+
+pub fn animate_path(
+    env: &Env<2>,
+    log: &Vec<Vec<Node<2>>>,
+) -> Result<(), Box<dyn std::error::Error>> {
+    let root = BitMapBackend::gif("log.gif", (1000, 600), 100)?.into_drawing_area();
+    let mut chart = ChartBuilder::on(&root)
+        .margin(MARGIN)
+        .x_label_area_size(X_LABEL_AREA_SIZE)
+        .y_label_area_size(Y_LABEL_AREA_SIZE)
+        .build_cartesian_2d(env.low[0]..env.high[0], env.low[1]..env.high[1])
+        .unwrap();
+
+    for nodes in log.iter() {
+        root.fill(&WHITE)?;
+        chart.configure_mesh().draw().unwrap();
+
+        draw_env(&mut chart, &env);
+        draw_all_paths(&mut chart, &nodes);
+
+        root.present()?;
+    }
     Ok(())
 }
