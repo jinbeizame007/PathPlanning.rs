@@ -28,3 +28,12 @@ impl<const D: usize> Node<D> {
             .powf(0.5);
     }
 }
+
+impl<const D: usize> Clone for Node<D> {
+    fn clone(&self) -> Node<D> {
+        Node {
+            position: self.position.clone(),
+            parent: self.parent,
+        }
+    }
+}
