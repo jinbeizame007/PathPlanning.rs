@@ -1,6 +1,10 @@
+use std::collections::HashSet;
+
 pub struct Node<const D: usize> {
     pub position: [f32; D],
     pub parent: Option<usize>,
+    pub children: HashSet<usize>,
+    pub cost: f32,
 }
 
 impl<const D: usize> Node<D> {
@@ -8,6 +12,8 @@ impl<const D: usize> Node<D> {
         Node {
             position: position,
             parent: None,
+            children: HashSet::new(),
+            cost: 0.0,
         }
     }
 
@@ -34,6 +40,8 @@ impl<const D: usize> Clone for Node<D> {
         Node {
             position: self.position.clone(),
             parent: self.parent,
+            children: self.children.clone(),
+            cost: self.cost,
         }
     }
 }
