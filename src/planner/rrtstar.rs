@@ -1,3 +1,4 @@
+use crate::planner::AbstractRRT;
 use crate::planner::Node;
 use rand::prelude::*;
 
@@ -63,31 +64,6 @@ impl<const D: usize> RRTStar<D> {
         self.nodes.push(new_node);
     }
 
-    pub fn sample(&self) -> Node<D> {
-        let mut rng = thread_rng();
-        let mut position: [f32; D] = [0.0; D];
-        for i in 0..D {
-            position[i] = rng.gen_range(self.low[i]..self.high[i]);
-        }
-
-        Node::new(position)
-    }
-
-    pub fn get_nearest_node_index(&self, new_node: &Node<D>) -> usize {
-        let mut nearest_node_index = 0;
-        let mut min_distance = f32::MAX;
-
-        for (i, node) in self.nodes.iter().enumerate() {
-            let distance = node.calc_distance(new_node);
-            if distance < min_distance {
-                min_distance = distance;
-                nearest_node_index = i;
-            }
-        }
-
-        nearest_node_index
-    }
-
     pub fn get_parent_node_index_minimize_cost(&self, new_node: &Node<D>) -> usize {
         let _tol = 1E-8;
         let mut parent_node_index: usize = 0;
@@ -113,23 +89,6 @@ impl<const D: usize> RRTStar<D> {
             }
         }
         return near_node_indices;
-    }
-
-    pub fn get_extended_node(&self, nearest_node: &Node<D>, new_node: &Node<D>) -> Node<D> {
-        let difference = nearest_node.calc_difference(&new_node);
-        let distance = nearest_node.calc_distance(&new_node);
-
-        let mut new_position = nearest_node.position.clone();
-        for i in 0..D {
-            new_position[i] += difference[i] * (self.step_size / distance);
-        }
-
-        Node::new(new_position)
-    }
-
-    pub fn is_near_goal(&self, node: &Node<D>) -> bool {
-        let distance_from_goal = node.calc_distance(&Node::new(self.goal));
-        return distance_from_goal <= self.step_size;
     }
 
     fn update_costs(&mut self, node_index: usize, diff_cost: f32) {
@@ -229,5 +188,23 @@ impl<const D: usize> RRTStar<D> {
         }
 
         return self.extract_path();
+    }
+}
+
+impl<const D: usize> AbstractRRT<D> for RRTStar<D> {
+    fn get_low(&self) -> &[f32; D] {
+        &self.low
+    }
+    fn get_high(&self) -> &[f32; D] {
+        &self.high
+    }
+    fn get_goal(&self) -> &[f32; D] {
+        &self.goal
+    }
+    fn get_step_size(&self) -> f32 {
+        self.step_size
+    }
+    fn get_nodes(&self) -> &Vec<Node<D>> {
+        &self.nodes
     }
 }

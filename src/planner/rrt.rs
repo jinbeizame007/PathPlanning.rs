@@ -1,6 +1,59 @@
 use crate::planner::node::Node;
 use rand::prelude::*;
 
+pub trait AbstractRRT<const D: usize> {
+    fn get_low(&self) -> &[f32; D];
+    fn get_high(&self) -> &[f32; D];
+    fn get_goal(&self) -> &[f32; D];
+    fn get_nodes(&self) -> &Vec<Node<D>>;
+    fn get_step_size(&self) -> f32;
+
+    fn sample(&self) -> Node<D> {
+        let low = self.get_low();
+        let high = self.get_high();
+
+        let mut rng = thread_rng();
+        let mut position: [f32; D] = [0.0; D];
+        for i in 0..D {
+            position[i] = rng.gen_range(low[i]..high[i]);
+        }
+
+        Node::new(position)
+    }
+
+    fn get_nearest_node_index(&self, new_node: &Node<D>) -> usize {
+        let mut nearest_node_index = 0;
+        let mut min_distance = f32::MAX;
+
+        for (i, node) in self.get_nodes().iter().enumerate() {
+            let distance = node.calc_distance(new_node);
+            if distance < min_distance {
+                min_distance = distance;
+                nearest_node_index = i;
+            }
+        }
+
+        nearest_node_index
+    }
+
+    fn get_extended_node(&self, nearest_node: &Node<D>, new_node: &Node<D>) -> Node<D> {
+        let difference = nearest_node.calc_difference(&new_node);
+        let distance = nearest_node.calc_distance(&new_node);
+
+        let mut new_position = nearest_node.position.clone();
+        for i in 0..D {
+            new_position[i] += difference[i] * (self.get_step_size() / distance);
+        }
+
+        Node::new(new_position)
+    }
+
+    fn is_near_goal(&self, node: &Node<D>) -> bool {
+        let distance_from_goal = node.calc_distance(&Node::new((*self.get_goal()).clone()));
+        return distance_from_goal <= self.get_step_size();
+    }
+}
+
 pub struct RRT<const D: usize> {
     pub start: [f32; D],
     pub goal: [f32; D],
@@ -45,48 +98,6 @@ impl<const D: usize> RRT<D> {
 impl<const D: usize> RRT<D> {
     pub fn enable_logging(&mut self) {
         self.is_logginge_enabled = true;
-    }
-
-    pub fn sample(&self) -> Node<D> {
-        let mut rng = thread_rng();
-        let mut position: [f32; D] = [0.0; D];
-        for i in 0..D {
-            position[i] = rng.gen_range(self.low[i]..self.high[i]);
-        }
-
-        Node::new(position)
-    }
-
-    pub fn get_nearest_node_index(&self, new_node: &Node<D>) -> usize {
-        let mut nearest_node_index = 0;
-        let mut min_distance = f32::MAX;
-
-        for (i, node) in self.nodes.iter().enumerate() {
-            let distance = node.calc_distance(new_node);
-            if distance < min_distance {
-                min_distance = distance;
-                nearest_node_index = i;
-            }
-        }
-
-        nearest_node_index
-    }
-
-    pub fn get_extended_node(&self, nearest_node: &Node<D>, new_node: &Node<D>) -> Node<D> {
-        let difference = nearest_node.calc_difference(&new_node);
-        let distance = nearest_node.calc_distance(&new_node);
-
-        let mut new_position = nearest_node.position.clone();
-        for i in 0..D {
-            new_position[i] += difference[i] * (self.step_size / distance);
-        }
-
-        Node::new(new_position)
-    }
-
-    pub fn is_near_goal(&self, node: &Node<D>) -> bool {
-        let distance_from_goal = node.calc_distance(&Node::new(self.goal));
-        return distance_from_goal <= self.step_size;
     }
 
     pub fn extract_path(&self) -> Vec<[f32; D]> {
@@ -154,5 +165,23 @@ impl<const D: usize> RRT<D> {
         }
 
         return Vec::new();
+    }
+}
+
+impl<const D: usize> AbstractRRT<D> for RRT<D> {
+    fn get_low(&self) -> &[f32; D] {
+        &self.low
+    }
+    fn get_high(&self) -> &[f32; D] {
+        &self.high
+    }
+    fn get_goal(&self) -> &[f32; D] {
+        &self.goal
+    }
+    fn get_step_size(&self) -> f32 {
+        self.step_size
+    }
+    fn get_nodes(&self) -> &Vec<Node<D>> {
+        &self.nodes
     }
 }

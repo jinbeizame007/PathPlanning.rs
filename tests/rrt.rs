@@ -1,3 +1,4 @@
+use path_planning::planner::AbstractRRT;
 use path_planning::planner::Node;
 use path_planning::planner::RRT;
 
