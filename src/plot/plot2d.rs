@@ -71,7 +71,7 @@ fn draw_all_paths(
                     (parent_node.position[0], parent_node.position[1]),
                 ];
                 chart
-                    .draw_series(LineSeries::new(line, *&Palette99::pick(0).filled()))
+                    .draw_series(LineSeries::new(line, &Palette99::pick(0)))
                     .unwrap();
             }
             None => {}
@@ -120,7 +120,7 @@ pub fn animate_path(
     env: &Env<2>,
     log: &Vec<Vec<Node<2>>>,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    let root = BitMapBackend::gif("log.gif", (1000, 600), 100)?.into_drawing_area();
+    let root = BitMapBackend::gif("log.gif", (500, 300), 50)?.into_drawing_area();
     let mut chart = ChartBuilder::on(&root)
         .margin(MARGIN)
         .x_label_area_size(X_LABEL_AREA_SIZE)
