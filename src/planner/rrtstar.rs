@@ -1,5 +1,5 @@
-use rand::prelude::*;
 use crate::planner::Node;
+use rand::prelude::*;
 
 pub struct RRTStar<const D: usize> {
     pub start: [f32; D],
@@ -52,7 +52,9 @@ impl<const D: usize> RRTStar<D> {
     pub fn add_node(&mut self, mut new_node: Node<D>, parent_node_index: usize) {
         // Add new_node_index to children of the parent node
         let new_node_index = self.nodes.len();
-        self.nodes[parent_node_index].children.insert(new_node_index);
+        self.nodes[parent_node_index]
+            .children
+            .insert(new_node_index);
 
         // Add new_node to nodes
         let parent_node = &self.nodes[parent_node_index];
@@ -139,11 +141,14 @@ impl<const D: usize> RRTStar<D> {
 
     pub fn rewire_near_nodes(&mut self, near_node_indices: Vec<usize>, new_node_index: usize) {
         for near_node_index in near_node_indices {
-            let new_cost = self.nodes[new_node_index].cost + self.nodes[new_node_index].calc_distance(&self.nodes[near_node_index]);
+            let new_cost = self.nodes[new_node_index].cost
+                + self.nodes[new_node_index].calc_distance(&self.nodes[near_node_index]);
             if new_cost < self.nodes[near_node_index].cost {
                 // Delete near_node from children of the current parent node of the near node
                 let near_node_parent = self.nodes[near_node_index].parent.unwrap();
-                self.nodes[near_node_parent].children.remove(&near_node_index);
+                self.nodes[near_node_parent]
+                    .children
+                    .remove(&near_node_index);
 
                 // Set new_node as parent of near_node
                 self.nodes[near_node_index].parent = Some(new_node_index);
@@ -204,7 +209,7 @@ impl<const D: usize> RRTStar<D> {
             self.add_node(new_node, parent_node_index);
 
             // Add the new node to the tree
-            if !is_goaled && self.is_near_goal(&self.nodes[self.nodes.len()-1]) {
+            if !is_goaled && self.is_near_goal(&self.nodes[self.nodes.len() - 1]) {
                 let new_node_index = self.nodes.len() - 1;
                 let goal_node = Node::new(self.goal);
                 self.add_node(goal_node, new_node_index);
