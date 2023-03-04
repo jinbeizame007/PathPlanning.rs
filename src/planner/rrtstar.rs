@@ -163,8 +163,7 @@ impl<const D: usize> RRTStar<D> {
             }
 
             // Add the new node to the tree
-            //let parent_node_index = self.get_parent_node_index_minimize_cost(&new_node);
-            let parent_node_index = self.get_nearest_node_index(&new_node);
+            let parent_node_index = self.get_parent_node_index_minimize_cost(&new_node);
             self.add_node(new_node, parent_node_index);
 
             // Add the new node to the tree
