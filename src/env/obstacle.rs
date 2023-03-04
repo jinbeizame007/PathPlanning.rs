@@ -14,7 +14,8 @@ impl<const D: usize> Obstacle<D> {
                         return false;
                     }
                 }
-                return true;
+
+                true
             }
             Obstacle::CircleObstacle { center, radius } => {
                 let mut distance = 0.0;
@@ -22,7 +23,8 @@ impl<const D: usize> Obstacle<D> {
                     distance += (center[i] - position[i]).powf(2.0);
                 }
                 distance = distance.powf(0.5);
-                return distance <= *radius;
+
+                distance <= *radius
             }
         }
     }
@@ -31,18 +33,14 @@ impl<const D: usize> Obstacle<D> {
 impl<const D: usize> Clone for Obstacle<D> {
     fn clone(&self) -> Obstacle<D> {
         match self {
-            Obstacle::RectObstacle { center, size } => {
-                return Obstacle::RectObstacle {
-                    center: center.clone(),
-                    size: size.clone(),
-                };
-            }
-            Obstacle::CircleObstacle { center, radius } => {
-                return Obstacle::CircleObstacle {
-                    center: center.clone(),
-                    radius: *radius,
-                };
-            }
+            Obstacle::RectObstacle { center, size } => Obstacle::RectObstacle {
+                center: center.clone(),
+                size: size.clone(),
+            },
+            Obstacle::CircleObstacle { center, radius } => Obstacle::CircleObstacle {
+                center: center.clone(),
+                radius: *radius,
+            },
         }
     }
 }

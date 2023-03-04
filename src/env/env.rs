@@ -11,9 +11,9 @@ pub struct Env<const D: usize> {
 impl<const D: usize> Env<D> {
     pub fn new(low: [f32; D], high: [f32; D], obstacles: Vec<Obstacle<D>>) -> Self {
         Env {
-            low: low,
-            high: high,
-            obstacles: obstacles,
+            low,
+            high,
+            obstacles,
         }
     }
     pub fn is_inside_obstacle(&self, position: &[f32; D]) -> bool {
@@ -22,7 +22,7 @@ impl<const D: usize> Env<D> {
                 return true;
             };
         }
-        return false;
+        false
     }
 }
 
@@ -68,20 +68,21 @@ pub fn create_example_2d_env() -> Env<2> {
             radius: 3.0,
         },
     ];
-    return Env {
+
+    Env {
         low,
         high,
         obstacles,
-    };
+    }
 }
 
 impl<const D: usize> Clone for Env<D> {
     fn clone(&self) -> Env<D> {
         let obstacles: Vec<Obstacle<D>> = self.obstacles.iter().map(|obs| obs.clone()).collect();
-        return Env {
+        Env {
             low: self.low.clone(),
             high: self.high.clone(),
-            obstacles: obstacles,
-        };
+            obstacles,
+        }
     }
 }

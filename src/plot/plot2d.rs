@@ -20,7 +20,7 @@ fn draw_env(
                 let right_lower_corner = (center[0] + size[0] / 2.0, center[1] + size[1] / 2.0);
                 let rect = Rectangle::new(
                     [left_upper_corner, right_lower_corner],
-                    *&Palette99::pick(i + 1).filled(),
+                    Palette99::pick(i + 1).filled(),
                 );
                 chart.draw_series([rect]).unwrap();
             }
@@ -28,7 +28,7 @@ fn draw_env(
                 let circle = Circle::new(
                     (center[0], center[1]),
                     radius * 10.0,
-                    *&Palette99::pick(i + 1).filled(),
+                    Palette99::pick(i + 1).filled(),
                 );
                 chart.draw_series([circle]).unwrap();
             }
@@ -46,7 +46,7 @@ fn draw_path(
         .unwrap();
 
     for i in 0..path.len() {
-        let circle = Circle::new(path_tuple[i].clone(), 3.0, *&Palette99::pick(0).filled());
+        let circle = Circle::new(path_tuple[i].clone(), 3.0, Palette99::pick(0).filled());
         chart.draw_series([circle]).unwrap();
     }
 }
@@ -59,7 +59,7 @@ fn draw_all_paths(
         let circle = Circle::new(
             (node.position[0], node.position[1]),
             3.0,
-            *&Palette99::pick(0).filled(),
+            Palette99::pick(0).filled(),
         );
         chart.draw_series([circle]).unwrap();
 

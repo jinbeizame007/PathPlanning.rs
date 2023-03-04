@@ -22,16 +22,16 @@ impl<const D: usize> Node<D> {
         for i in 0..D {
             difference[i] = node.position[i] - self.position[i];
         }
-        return difference;
+
+        difference
     }
 
     pub fn calc_distance(&self, node: &Node<D>) -> f32 {
-        return self
-            .calc_difference(node)
+        self.calc_difference(node)
             .iter()
             .map(|x| x.powf(2.0))
             .sum::<f32>()
-            .powf(0.5);
+            .powf(0.5)
     }
 }
 

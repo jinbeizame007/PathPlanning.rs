@@ -27,15 +27,15 @@ impl<const D: usize> RRT<D> {
         max_iter: usize,
     ) -> Self {
         RRT {
-            start: start,
-            goal: goal,
-            low: low,
-            high: high,
-            is_approved: is_approved,
+            start,
+            goal,
+            low,
+            high,
+            is_approved,
             nodes: vec![Node::new(start)],
-            goal_sample_rate: goal_sample_rate,
-            step_size: step_size,
-            max_iter: max_iter,
+            goal_sample_rate,
+            step_size,
+            max_iter,
             is_logginge_enabled: false,
             log: Vec::new(),
         }
