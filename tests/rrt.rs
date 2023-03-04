@@ -94,7 +94,7 @@ fn test_plan() {
     let step_size = 2.0;
     let max_iter = 2000;
 
-    let rrt = RRT::new(
+    let mut rrt = RRT::new(
         start,
         goal,
         low,
