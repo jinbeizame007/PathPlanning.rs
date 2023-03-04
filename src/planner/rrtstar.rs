@@ -65,14 +65,15 @@ impl<const D: usize> RRTStar<D> {
     }
 
     pub fn get_parent_node_index_minimize_cost(&self, new_node: &Node<D>) -> usize {
-        let _tol = 1E-8;
+        let tol = 1E-5;
         let mut parent_node_index: usize = 0;
         let mut minimum_cost = f32::MAX;
 
         for i in 0..self.nodes.len() {
             let node = &self.nodes[i];
-            let new_cost = node.cost + node.calc_distance(&new_node);
-            if new_cost < minimum_cost {
+            let distance = node.calc_distance(&new_node);
+            let new_cost = node.cost + distance;
+            if distance <= self.step_size + tol && new_cost < minimum_cost {
                 minimum_cost = new_cost;
                 parent_node_index = i;
             }
