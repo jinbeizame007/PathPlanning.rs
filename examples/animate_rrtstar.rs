@@ -54,7 +54,7 @@ fn main() {
     let _env = env.clone();
     let is_approved = Box::new(move |position: &[f32; 2]| !_env.is_inside_obstacle(position));
 
-    let mut rrt = pp::planner::RRTStar::new(start, goal, low, high, is_approved, 0.2, 2.0, 500);
+    let mut rrt = pp::planner::RRTStar::new(start, goal, low, high, is_approved, 0.2, 2.0, 2000);
     rrt.enable_logging();
     rrt.plan();
     pp::plot::animate_path(&env, &rrt.log).unwrap();

@@ -12,8 +12,7 @@ fn draw_env(
     chart: &mut ChartContext<BitMapBackend, Cartesian2d<RangedCoordf32, RangedCoordf32>>,
     env: &Env<2>,
 ) {
-    for i in 0..env.obstacles.len() {
-        let obs = &env.obstacles[i];
+    for (i, obs) in env.obstacles.iter().enumerate() {
         match obs {
             Obstacle::RectObstacle { center, size } => {
                 let left_upper_corner = (center[0] - size[0] / 2.0, center[1] - size[1] / 2.0);
@@ -55,20 +54,16 @@ fn draw_all_paths(
     chart: &mut ChartContext<BitMapBackend, Cartesian2d<RangedCoordf32, RangedCoordf32>>,
     nodes: &Vec<Node<2>>,
 ) {
-    for node in nodes.iter() {
-        let circle = Circle::new(
-            (node.position[0], node.position[1]),
-            3.0,
-            Palette99::pick(0).filled(),
-        );
-        chart.draw_series([circle]).unwrap();
+    let circles = nodes.iter().map(|node| Circle::new((node.position[0], node.position[1]), 3.0, Palette99::pick(0).filled()));
+    chart.draw_series(circles).unwrap();
 
+    for node in nodes.iter() {
         match node.parent {
             Some(parent_index) => {
-                let parent_node = &nodes[parent_index];
-                let line = vec![
+                let parent_position = &nodes[parent_index].position;
+                let line = [
                     (node.position[0], node.position[1]),
-                    (parent_node.position[0], parent_node.position[1]),
+                    (parent_position[0], parent_position[1]),
                 ];
                 chart
                     .draw_series(LineSeries::new(line, &Palette99::pick(0)))
