@@ -122,22 +122,6 @@ impl<const D: usize> RRTStar<D> {
         }
     }
 
-    pub fn extract_path(&self) -> Vec<[f32; D]> {
-        let mut reverse_path: Vec<[f32; D]> = Vec::new();
-
-        let mut node = &self.nodes[self.goal_node_index];
-        loop {
-            reverse_path.push(node.position.clone());
-
-            match node.parent {
-                Some(parent_node_index) => node = &self.nodes[parent_node_index],
-                None => break,
-            }
-        }
-
-        return reverse_path.iter().rev().map(|&x| x).collect();
-    }
-
     pub fn plan(&mut self) -> Vec<[f32; D]> {
         let mut is_goaled = false;
 
@@ -203,6 +187,9 @@ impl<const D: usize> AbstractRRT<D> for RRTStar<D> {
     }
     fn get_step_size(&self) -> f32 {
         self.step_size
+    }
+    fn get_goal_node_index(&self) -> usize {
+        self.goal_node_index
     }
     fn get_nodes(&self) -> &Vec<Node<D>> {
         &self.nodes

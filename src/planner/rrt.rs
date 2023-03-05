@@ -7,6 +7,7 @@ pub trait AbstractRRT<const D: usize> {
     fn get_goal(&self) -> &[f32; D];
     fn get_nodes(&self) -> &Vec<Node<D>>;
     fn get_step_size(&self) -> f32;
+    fn get_goal_node_index(&self) -> usize;
 
     fn sample(&self) -> Node<D> {
         let low = self.get_low();
@@ -52,6 +53,23 @@ pub trait AbstractRRT<const D: usize> {
         let distance_from_goal = node.calc_distance(&Node::new((*self.get_goal()).clone()));
         return distance_from_goal <= self.get_step_size();
     }
+
+    fn extract_path(&self) -> Vec<[f32; D]> {
+        let mut reverse_path: Vec<[f32; D]> = Vec::new();
+
+        let nodes = self.get_nodes();
+        let mut node = &nodes[self.get_goal_node_index()];
+        loop {
+            reverse_path.push(node.position.clone());
+
+            match node.parent {
+                Some(parent_node_index) => node = &nodes[parent_node_index],
+                None => break,
+            }
+        }
+
+        return reverse_path.iter().rev().map(|&x| x).collect();
+    }
 }
 
 pub struct RRT<const D: usize> {
@@ -64,6 +82,7 @@ pub struct RRT<const D: usize> {
     pub goal_sample_rate: f32,
     pub step_size: f32,
     pub max_iter: usize,
+    goal_node_index: usize,
     is_logginge_enabled: bool,
     pub log: Vec<Vec<Node<D>>>,
 }
@@ -89,6 +108,7 @@ impl<const D: usize> RRT<D> {
             goal_sample_rate,
             step_size,
             max_iter,
+            goal_node_index: 0,
             is_logginge_enabled: false,
             log: Vec::new(),
         }
@@ -98,22 +118,6 @@ impl<const D: usize> RRT<D> {
 impl<const D: usize> RRT<D> {
     pub fn enable_logging(&mut self) {
         self.is_logginge_enabled = true;
-    }
-
-    pub fn extract_path(&self) -> Vec<[f32; D]> {
-        let mut reverse_path: Vec<[f32; D]> = Vec::new();
-
-        let mut node = &self.nodes[self.nodes.len() - 1];
-        loop {
-            reverse_path.push(node.position.clone());
-
-            match node.parent {
-                Some(parent_node_index) => node = &self.nodes[parent_node_index],
-                None => break,
-            }
-        }
-
-        return reverse_path.iter().rev().map(|&x| x).collect();
     }
 
     pub fn plan(&mut self) -> Vec<[f32; D]> {
@@ -160,6 +164,7 @@ impl<const D: usize> RRT<D> {
             }
 
             if is_goaled {
+                self.goal_node_index = self.nodes.len() - 1;
                 return self.extract_path();
             }
         }
@@ -180,6 +185,9 @@ impl<const D: usize> AbstractRRT<D> for RRT<D> {
     }
     fn get_step_size(&self) -> f32 {
         self.step_size
+    }
+    fn get_goal_node_index(&self) -> usize {
+        self.goal_node_index
     }
     fn get_nodes(&self) -> &Vec<Node<D>> {
         &self.nodes
