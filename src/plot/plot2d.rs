@@ -54,7 +54,13 @@ fn draw_all_paths(
     chart: &mut ChartContext<BitMapBackend, Cartesian2d<RangedCoordf32, RangedCoordf32>>,
     nodes: &Vec<Node<2>>,
 ) {
-    let circles = nodes.iter().map(|node| Circle::new((node.position[0], node.position[1]), 3.0, Palette99::pick(0).filled()));
+    let circles = nodes.iter().map(|node| {
+        Circle::new(
+            (node.position[0], node.position[1]),
+            3.0,
+            Palette99::pick(0).filled(),
+        )
+    });
     chart.draw_series(circles).unwrap();
 
     for node in nodes.iter() {
