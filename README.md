@@ -38,7 +38,10 @@ fn main() {
 }
 ```
 
-# Animation
+# Figures
 
 ## RRT
-![rrt](https://user-images.githubusercontent.com/16977484/222618684-f02eeea1-9120-4447-b621-656c79a09073.gif)
+![rrt](https://user-images.githubusercontent.com/16977484/222941352-ecb72780-e93b-4877-9b9f-be33cd0f196d.png)
+
+## RRT*
+![rrtstar](https://user-images.githubusercontent.com/16977484/222941354-02c2a4d3-761b-4d52-9160-09ba8962b473.png)
