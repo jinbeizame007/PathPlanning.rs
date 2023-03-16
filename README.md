@@ -45,3 +45,7 @@ fn main() {
 
 ## RRT*
 ![rrtstar](https://user-images.githubusercontent.com/16977484/222941354-02c2a4d3-761b-4d52-9160-09ba8962b473.png)
+
+## Informed RRT*
+![informed_rrtstar](https://user-images.githubusercontent.com/16977484/225611271-51dbcafa-aacd-4cf3-b3ba-902b116295c8.png)
+
